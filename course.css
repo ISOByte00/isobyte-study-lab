@@ -129,3 +129,91 @@ body.dark #german-root h1,body.dark #german-root h2,body.dark #german-root .g-fl
 body.dark #german-root .g-title p,body.dark #german-root .g-grid span,body.dark #german-root .g-word-list span,body.dark #german-root .g-reading p{color:#aab9c1}
 body.dark #german-root input{background:#14232b;color:#eaf0f3;border-color:#405660}
 body.dark #german-root .g-note{background:#393326;color:#eadbb8;border-color:#695d42}
+
+
+/* Contrast pass for the German module. The module has its own fixed palette,
+   so every light surface must be explicitly adapted when the site is dark. */
+#german-root {
+  --g-surface:#ffffff;
+  --g-soft:#f1f5f7;
+  --g-text:#24343d;
+  --g-muted:#586a73;
+  --g-border:#d9e3e8;
+  color:var(--g-text);
+}
+#german-root .g-title p,
+#german-root .g-grid span,
+#german-root .g-word-list span,
+#german-root .g-phrases span,
+#german-root .g-reading p,
+#german-root .g-source,
+#german-root .g-main>footer { color:var(--g-muted); }
+
+body.dark #german-root {
+  --g-surface:#1b2a32;
+  --g-soft:#263943;
+  --g-text:#edf4f6;
+  --g-muted:#b6c5cc;
+  --g-border:#40545e;
+  background:#111b21;
+  color:var(--g-text);
+}
+body.dark #german-root :is(.g-sidebar,.g-main>header,.g-main>header button,.g-switch,
+  .g-stats>div,.g-grid button,.g-flash,.g-word-list>div,.g-spell,.g-grammar article,
+  .g-reading,.g-question,.g-option,.g-result,.g-phrases>div,.g-examples>div,
+  .g-rows>div,.g-filters button,.g-actions button,#g-search,.g-spell input,.g-question input,
+  .g-formula) {
+  background:var(--g-surface);
+  color:var(--g-text);
+  border-color:var(--g-border);
+}
+body.dark #german-root .g-hero {
+  background:#243b47;
+  border-color:#3c5967;
+}
+body.dark #german-root :is(.g-brand strong,.g-title h1,.g-main>header b,.g-hero h1,
+  .g-stats b,.g-grid b,.g-grid strong,.g-flash strong,.g-word-list b,.g-spell h2,
+  .g-grammar h2,.g-reading h2,.g-question h2,.g-result b,.g-examples b,
+  .g-phrases b,.g-phrases strong,.g-reading div b) {
+  color:var(--g-text);
+}
+body.dark #german-root :is(.g-brand small,.g-nav-label,.g-main>header,.g-title p,.g-hero p,
+  .g-hero small,.g-stats small,.g-stats span,.g-grid small,.g-grid span,.g-flash small,
+  .g-flash span,.g-word-list span,.g-spell>small,.g-grammar article>small,.g-rows span,
+  .g-examples small,.g-phrases span,.g-qmeta,.g-reading p,.g-source,.g-main>footer) {
+  color:var(--g-muted);
+}
+body.dark #german-root .g-hero button,
+body.dark #german-root .g-spell button,
+body.dark #german-root .g-question>button,
+body.dark #german-root .g-result button {
+  background:#39718e;
+  color:#ffffff;
+}
+body.dark #german-root .g-option.selected {
+  background:#294657;
+  color:#f0f7fa;
+  border-color:#79abc2;
+}
+body.dark #german-root .g-option.right {
+  background:#214335;
+  color:#c9f1d8;
+  border-color:#5ba47b;
+}
+body.dark #german-root .g-feedback.ok {
+  background:#214335;
+  color:#c9f1d8;
+  border:1px solid #397451;
+}
+body.dark #german-root .g-feedback.bad {
+  background:#482e31;
+  color:#ffd2ce;
+  border:1px solid #80504d;
+}
+body.dark #german-root .g-note {
+  background:#393326;
+  color:#f0dfbd;
+  border-color:#766747;
+}
+body.dark #german-root input::placeholder { color:#a7b8c0; opacity:1; }
+body.dark #german-root .g-main>footer { border-color:var(--g-border); }
