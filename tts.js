@@ -55,6 +55,7 @@ async function browserSay(text,lang,rate,id){
  await loadVoices();if(!isCurrent(id))return false;
  const available=voices().filter(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith(lang.slice(0,2).toLowerCase()));
  if(lang.startsWith('tr')&&voices().length&&!available.length)throw Error('Türkçe ses paketi yüklü değil. Google Cloud sesini bağlamayı deneyebilirsin.');
+ if(lang.toLowerCase().startsWith('de')&&voices().length&&!available.length)throw Error('Cihazında Almanca tarayıcı sesi yok. Google Cloud · HD sesler seçeneğini kullan.');
  return new Promise(resolve=>{
   if(!isCurrent(id)){resolve(false);return;}
   const u=new SpeechSynthesisUtterance(text);
