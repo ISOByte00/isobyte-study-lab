@@ -194,3 +194,52 @@ body.dark .no-pad{background:var(--card)}
  .phrase{grid-template-columns:minmax(0,1fr) minmax(0,.8fr) 22px;gap:6px}.phrase span{font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* Contrast hardening: keep legacy content readable in both themes. */
+#view :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {
+  background:var(--card);
+  color:var(--ink);
+  border-color:var(--line);
+}
+#view :is(input,textarea,select)::placeholder {
+  color:var(--muted);
+  opacity:.9;
+}
+#view :is(.card,.content-box,.check-question,.stat,.audio-item,.result-block,.voice-card) {
+  color:var(--ink);
+  border-color:var(--line);
+}
+#view :is(.card,.content-box,.check-question,.stat,.audio-item,.result-block,.voice-card)
+  :is(h1,h2,h3,h4,strong,b,label,th,td) {
+  color:var(--ink);
+}
+#view :is(.card,.content-box,.check-question,.stat,.audio-item,.result-block,.voice-card)
+  :is(p,small,.muted,.stat-hint,.filter-caption,.answer-hint,.voice-status) {
+  color:var(--muted);
+}
+body.dark #view :is(.card,.content-box,.check-question,.stat,.audio-item,.result-block,.voice-card,
+  .roadmap-step,.compare-part,.example-line,.phrase,.match-row,.mode-card,.flashcard,.builder-target,.builder-bank) {
+  background-color:var(--card);
+  color:var(--ink);
+  border-color:var(--line);
+}
+body.dark #view :is(.card,.content-box,.check-question,.stat,.audio-item,.result-block,.voice-card,
+  .roadmap-step,.compare-part,.example-line,.phrase,.match-row,.mode-card,.flashcard,.builder-target,.builder-bank)
+  :is(h1,h2,h3,h4,strong,b,label,th,td) {
+  color:var(--ink);
+}
+body.dark #view :is(.card,.content-box,.check-question,.stat,.audio-item,.result-block,.voice-card,
+  .roadmap-step,.compare-part,.example-line,.phrase,.match-row,.mode-card,.flashcard,.builder-target,.builder-bank)
+  :is(p,small,.muted,.stat-hint,.filter-caption,.answer-hint,.voice-status) {
+  color:var(--muted);
+}
+body.dark #view :is(.search-box,.type-answer input,.voice-form select,.voice-form input[type="url"],
+  .endpoint-label input,.match-row select) {
+  background:var(--soft);
+  color:var(--ink);
+  border-color:var(--line);
+}
+body.dark #view :is(.option,.token,.match-row,.mini-action,.speaker-inline) {
+  color:var(--ink);
+  border-color:var(--line);
+}
