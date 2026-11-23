@@ -1,0 +1,131 @@
+/* Multi-course Study Lab and German course styles */
+.course-gate{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:24px;background:rgba(18,30,39,.72);backdrop-filter:blur(8px)}
+.course-gate[hidden]{display:none}
+.course-dialog{width:min(760px,100%);padding:clamp(24px,5vw,44px);background:#fff;border:1px solid #dfe7eb;border-radius:18px;box-shadow:0 30px 100px #101b2480;color:#202c34}
+.course-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;color:#54778b}
+.course-dialog h1{font-size:clamp(28px,5vw,42px);margin:10px 0 8px;color:#1e303a}
+.course-dialog>p{color:#697781;margin:0 0 26px;line-height:1.7}
+.course-options{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.course-option{border:1px solid #dce5e9;border-radius:13px;background:#fbfcfd;color:#22323b;text-align:left;padding:22px;cursor:pointer;transition:border-color .15s,background .15s,transform .15s;display:grid;gap:9px;min-height:170px}
+.course-option:hover{border-color:#6f9db6;background:#f3f8fa;transform:translateY(-2px)}
+.course-option .course-code{font-size:11px;color:#6e8491;font-weight:800;letter-spacing:.1em}
+.course-option strong{font-size:21px}
+.course-option span:last-child{font-size:13px;line-height:1.55;color:#6a7780}
+.course-gate-note{font-size:12px!important;margin:20px 0 0!important}
+.course-switcher{border:1px solid var(--line,#dce5e9);background:transparent;color:var(--muted,#65717b);border-radius:7px;padding:7px 10px;font-size:11px;font-weight:650;cursor:pointer}
+.course-switcher:hover{background:var(--soft,#f3f5f6);color:var(--ink,#202a32)}
+#german-root{min-height:100vh;background:#f6f8f9;color:#202a32;font:14px/1.6 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#german-root *{box-sizing:border-box}
+#german-root button,#german-root input{font:inherit}
+#german-root button{cursor:pointer}
+#german-root .g-shell{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}
+#german-root .g-sidebar{position:sticky;top:0;height:100vh;padding:23px 16px;background:#fbfcfc;border-right:1px solid #e3e8eb;display:flex;flex-direction:column;gap:17px}
+#german-root .g-brand{display:flex;align-items:center;gap:11px;padding:5px 8px 20px;border-bottom:1px solid #e7ecee}
+#german-root .g-brand>b{width:38px;height:38px;display:grid;place-items:center;background:#285f7d;color:white;border-radius:8px;font-weight:800}
+#german-root .g-brand span{display:grid;gap:2px}
+#german-root .g-brand strong{font-size:14px}
+#german-root .g-brand small{font-size:10px;color:#78858d}
+#german-root .g-nav-label{color:#87939a;font-size:10px;font-weight:800;letter-spacing:.08em;padding:0 9px}
+#german-root .g-sidebar nav{display:grid;gap:4px}
+#german-root .g-sidebar nav button{border:0;background:transparent;color:#586771;text-align:left;padding:11px 12px;border-radius:7px;font-size:13px}
+#german-root .g-sidebar nav button:hover,#german-root .g-sidebar nav button.active{background:#e8f1f5;color:#245c7a;font-weight:700}
+#german-root .g-switch{margin-top:auto;border:1px solid #dfe6e9;background:#fff;padding:11px;border-radius:8px;color:#5b6e78;font-size:12px}
+#german-root .g-main{min-width:0}
+#german-root .g-main>header{height:64px;background:#fff;border-bottom:1px solid #e3e8eb;display:flex;align-items:center;gap:12px;padding:0 clamp(18px,4vw,42px);color:#63717a;font-size:12px}
+#german-root .g-main>header button{border:1px solid #e2e8eb;background:#fff;border-radius:7px;padding:7px 10px;color:#556975;font-size:11px}
+#german-root .g-main>header button:first-child{display:none}
+#german-root .g-main>header span{flex:1}
+#german-root .g-main>header b{color:#283c47}
+#german-root #g-view{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,42px) 58px}
+#german-root .g-title{margin-bottom:24px}
+#german-root .g-title small{font-size:10px;letter-spacing:.1em;color:#647e8d;font-weight:800}
+#german-root .g-title h1{font-size:clamp(26px,3vw,36px);letter-spacing:-.04em;margin:8px 0 7px;color:#233641}
+#german-root .g-title p{max-width:740px;color:#65747d;margin:0;line-height:1.7}
+#german-root .g-hero{padding:34px 38px;border:1px solid #d8e5ea;border-radius:13px;background:#eaf2f5;margin-bottom:20px}
+#german-root .g-hero small{font-size:10px;letter-spacing:.1em;font-weight:800;color:#51798f}
+#german-root .g-hero h1{font-size:clamp(30px,4vw,43px);margin:8px 0;color:#213c4b}
+#german-root .g-hero p{max-width:720px;color:#536873;line-height:1.7;margin:0 0 20px}
+#german-root .g-hero button,#german-root .g-spell button,#german-root .g-question>button,#german-root .g-result button{border:0;background:#285f7d;color:#fff;padding:10px 15px;border-radius:7px;font-size:12px;font-weight:700}
+#german-root .g-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 28px}
+#german-root .g-stats>div{background:#fff;border:1px solid #e1e7ea;border-radius:9px;padding:15px}
+#german-root .g-stats small{display:block;font-size:9px;letter-spacing:.06em;color:#77858d;font-weight:800}
+#german-root .g-stats b{display:block;font-size:24px;margin:4px 0;color:#2d5268}
+#german-root .g-stats span{font-size:11px;color:#74818a}
+#german-root .g-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0 22px}
+#german-root .g-grid button{display:grid;gap:7px;text-align:left;border:1px solid #e0e7ea;border-radius:10px;padding:18px;background:#fff;color:#293b45}
+#german-root .g-grid button:hover{border-color:#a8c3d1;background:#fcfdfe}
+#german-root .g-grid small{color:#7995a4;font-size:10px;font-weight:800}
+#german-root .g-grid b{font-size:16px}
+#german-root .g-grid span{color:#687680;font-size:12px}
+#german-root .g-grid strong{font-size:11px;color:#326580}
+#german-root .g-note{padding:15px 17px;border:1px solid #eee5d0;border-left:3px solid #d4b77e;border-radius:8px;background:#faf7ef;color:#695d46;line-height:1.7;margin:16px 0}
+#german-root .g-note p{margin:5px 0 0;font-size:12px}
+#german-root .g-source{font-size:11px;color:#89959b;margin:16px 0}
+#german-root .g-filters{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}
+#german-root .g-filters button{border:1px solid #dfe7eb;background:#fff;color:#5d6d77;padding:7px 10px;border-radius:7px;font-size:11px}
+#german-root .g-filters button:hover{border-color:#80a6bb;color:#285f7d}
+#german-root #g-search{width:100%;max-width:460px;border:1px solid #dce5e9;border-radius:8px;background:#fff;padding:11px 13px;margin:8px 0 17px;color:#273842}
+#german-root .g-flash{min-height:205px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:#fff;border:1px solid #dfe8ec;border-radius:12px;padding:27px;cursor:pointer;margin:16px 0 10px}
+#german-root .g-flash small{font-size:10px;font-weight:800;letter-spacing:.12em;color:#64889b}
+#german-root .g-flash strong{font-size:clamp(26px,5vw,39px);margin:16px 0;color:#263f4c;overflow-wrap:anywhere}
+#german-root .g-flash span{font-size:12px;color:#74828a}
+#german-root .g-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:25px}
+#german-root .g-actions button,#german-root .g-word-list button{border:1px solid #dce5e9;background:#fff;color:#476170;border-radius:7px;padding:8px 11px;font-size:11px}
+#german-root .g-word-list{display:grid;gap:7px;margin-top:12px}
+#german-root .g-word-list>div{display:grid;grid-template-columns:minmax(150px,1fr) minmax(130px,1fr) auto auto;align-items:center;gap:10px;background:#fff;border:1px solid #e5eaec;border-radius:8px;padding:10px 12px}
+#german-root .g-word-list b{font-size:13px;color:#2b4350}
+#german-root .g-word-list span{font-size:12px;color:#6b7981}
+#german-root .g-word-list button{padding:5px 8px}
+#german-root .g-word-list button:hover,#german-root .g-actions button:hover{border-color:#9abaca;color:#285f7d}
+#german-root .g-spell{max-width:720px;background:#fff;border:1px solid #e1e8eb;border-radius:12px;padding:26px}
+#german-root .g-spell>small{font-size:10px;color:#6b8998;font-weight:800;letter-spacing:.1em}
+#german-root .g-spell h2{font-size:27px;margin:12px 0;color:#293f4a}
+#german-root .g-spell form{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0}
+#german-root .g-spell input,#german-root .g-question input{flex:1;min-width:210px;border:1px solid #dce5e9;border-radius:8px;padding:11px 13px;color:#293b45;background:#fff}
+#german-root .g-feedback{border-radius:8px;padding:13px;margin:14px 0;font-size:13px}
+#german-root .g-feedback p{margin:5px 0}
+#german-root .g-feedback.ok{background:#edf7f2;color:#236346}
+#german-root .g-feedback.bad{background:#fcf0ef;color:#9a4742}
+#german-root .g-grammar{display:grid;gap:14px}
+#german-root .g-grammar article,#german-root .g-reading{background:#fff;border:1px solid #e1e8eb;border-radius:10px;padding:22px;margin-bottom:12px}
+#german-root .g-grammar article>small{color:#6d8997;font-size:10px;font-weight:800}
+#german-root .g-grammar h2,#german-root .g-reading h2{font-size:20px;color:#2a414d;margin:6px 0 14px}
+#german-root .g-formula{padding:12px;background:#f0f5f7;border:1px solid #e1e9ed;border-radius:7px;font-weight:700;color:#31566b;margin:12px 0}
+#german-root .g-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0}
+#german-root .g-rows>div{display:flex;justify-content:space-between;gap:10px;border:1px solid #e8edef;border-radius:6px;padding:9px 11px;font-size:12px}
+#german-root .g-rows span{color:#6e7d85}
+#german-root .g-examples{display:grid;gap:8px;margin:14px 0}
+#german-root .g-examples>div{display:grid;gap:4px;padding:10px 12px;background:#f8fafb;border-radius:7px}
+#german-root .g-examples b{font-size:13px}
+#german-root .g-examples strong{font-size:13px;color:#315d76}
+#german-root .g-examples small{color:#75828a}
+#german-root .g-phrases{display:grid;gap:8px}
+#german-root .g-phrases>div{display:grid;grid-template-columns:1fr 1fr auto;align-items:center;gap:8px;padding:12px;background:#fff;border:1px solid #e2e9ec;border-radius:8px}
+#german-root .g-phrases b{font-size:12px}
+#german-root .g-phrases strong{font-size:12px;color:#315e78}
+#german-root .g-phrases span{grid-column:1/3;font-size:11px;color:#75828a}
+#german-root .g-phrases button{border:0;background:transparent;cursor:pointer}
+#german-root .g-qmeta{font-size:11px;letter-spacing:.08em;color:#638295;font-weight:800;margin:18px 0 10px}
+#german-root .g-question{max-width:820px;padding:23px;background:#fff;border:1px solid #e0e8eb;border-radius:11px}
+#german-root .g-question h2{font-size:18px;line-height:1.6;white-space:normal;color:#2c414c;margin:0 0 18px}
+#german-root .g-option{display:block;width:100%;text-align:left;border:1px solid #e2e9ec;background:#fff;border-radius:7px;padding:11px 13px;margin:7px 0;color:#405560;font-size:13px}
+#german-root .g-option.selected{border-color:#74a0b6;background:#f0f6f8}
+#german-root .g-option.right{border-color:#75b196;background:#eef7f1;color:#276b4c}
+#german-root .g-question>button{margin-top:16px}
+#german-root .g-result{max-width:760px;background:#fff;border:1px solid #e0e8eb;border-radius:12px;padding:30px;text-align:center}
+#german-root .g-result>b{font-size:42px;color:#2b5e79}
+#german-root .g-reading{margin-bottom:12px}
+#german-root .g-reading p{line-height:1.8;color:#4f606a}
+#german-root .g-reading div{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #edf0f1;padding:8px 0;font-size:12px}
+#german-root .g-reading div b{color:#547a67}
+#german-root .g-main>footer{padding:18px 36px;border-top:1px solid #e5eaec;color:#89949a;font-size:10px}
+#german-root #g-toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#263e4b;color:#fff;border-radius:7px;padding:10px 15px;font-size:12px;transition:.2s}
+#german-root #g-toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:850px){#german-root .g-shell{grid-template-columns:1fr}#german-root .g-sidebar{position:fixed;z-index:60;left:0;top:0;bottom:0;width:255px;transform:translateX(-105%);transition:transform .2s}#german-root .g-sidebar.open{transform:translateX(0)}#german-root .g-main>header button:first-child{display:block}}
+@media(max-width:620px){.course-options{grid-template-columns:1fr}.course-option{min-height:130px}#german-root .g-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#german-root .g-grid{grid-template-columns:1fr}#german-root .g-hero{padding:25px 21px}#german-root .g-word-list>div{grid-template-columns:1fr auto auto}#german-root .g-word-list span{grid-column:1/2}#german-root .g-rows{grid-template-columns:1fr}#german-root .g-phrases>div{grid-template-columns:1fr auto}#german-root .g-phrases span{grid-column:1/2}#german-root #g-view{padding-top:25px}}
+body.dark #german-root{background:#111b21;color:#e9f0f3}
+body.dark #german-root .g-sidebar,body.dark #german-root .g-main>header,body.dark #german-root .g-main>header button,body.dark #german-root .g-grid button,body.dark #german-root .g-stats>div,body.dark #german-root .g-flash,body.dark #german-root .g-spell,body.dark #german-root .g-grammar article,body.dark #german-root .g-reading,body.dark #german-root .g-question,body.dark #german-root .g-result,body.dark #german-root .g-word-list>div{background:#1b2a32;color:#eaf0f3;border-color:#344851}
+body.dark #german-root h1,body.dark #german-root h2,body.dark #german-root .g-flash strong,body.dark #german-root .g-word-list b{color:#eaf0f3}
+body.dark #german-root .g-title p,body.dark #german-root .g-grid span,body.dark #german-root .g-word-list span,body.dark #german-root .g-reading p{color:#aab9c1}
+body.dark #german-root input{background:#14232b;color:#eaf0f3;border-color:#405660}
+body.dark #german-root .g-note{background:#393326;color:#eadbb8;border-color:#695d42}
