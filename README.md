@@ -26,6 +26,12 @@
 - `in`, `auf`, `unter` başta olmak üzere Wechselpräpositionen alıştırmaları
 - Okuma çalışması, karma alıştırma merkezi ve 20 soruluk yazılı provası
 
+## Seslendirme
+
+İngilizce ve Almanca modülleri aynı ses motoru ayarlarını kullanır. Almanca kelime kartlarında **Google Cloud · HD sesler** seçilebilir; kelimeler ses sunucusuna `de-DE` diliyle gönderilir. Tarayıcıda Almanca ses bulunmuyorsa Google Cloud seçeneği kullanılabilir.
+
+Google Cloud API anahtarını site koduna veya GitHub deposuna koyma. Anahtar, Cloudflare Worker tarafında Secret olarak saklanır. Worker adresi tarayıcıda kaydedilir ve iki ders tarafından ortak kullanılır.
+
 ## Çalışma kayıtları
 
 Ders seçimi, öğrenilen kelimeler, yazım sonuçları ve deneme puanları tarayıcının `localStorage` alanında saklanır. İngilizce ve Almanca kayıtları birbirinden ayrıdır. Site bir hesap veya sunucu gerektirmez.
