@@ -3,17 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="11. Sınıf İngilizce 1. ve 2. ünite: konu anlatımı, prefer/would rather, will/going to, sarı kelimeler, EBA dinleme bağlantıları ve interaktif deneme." />
+  <meta name="description" content="11. sınıf için İngilizce ve Almanca dersleri: konu anlatımı, kelime ezberi, yazım çalışması ve interaktif yazılı provaları." />
   <meta name="theme-color" content="#f7f8fc" />
-  <title>1.1 İngilizce Yazılı · ISOByte</title>
+  <title>ISOByte Study Lab · Ders Çalışma Alanı</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="course.css" />
   <script defer src="data.js"></script>
   <script defer src="v2-data.js"></script>
   <script defer src="tts.js"></script>
   <script defer src="app.js"></script>
+  <script defer src="german-data.js"></script>
+  <script defer src="german-app.js"></script>
+  <script defer src="subjects.js"></script>
 </head>
 <body>
+  <div class="course-gate" id="course-gate" hidden>
+    <section class="course-dialog" aria-labelledby="course-title">
+      <div class="course-kicker">ISOBYTE STUDY LAB · 11. SINIF</div>
+      <h1 id="course-title">Hangi derse çalışmak istiyorsun?</h1>
+      <p>Çalışma alanını seç. İlerleme ve kelime kayıtları her ders için ayrı tutulur. Seçimini daha sonra değiştirebilirsin.</p>
+      <div class="course-options">
+        <button class="course-option" type="button" data-course="english"><span class="course-code">EN · ENGLISH</span><strong>İngilizce</strong><span>Future Jobs, Hobbies and Skills · Konu anlatımı, kelime, okuma ve yazılı provası</span></button>
+        <button class="course-option" type="button" data-course="german"><span class="course-code">DE · DEUTSCH</span><strong>Almanca</strong><span>1. Thema: Unterkunft · Artikel, kelimeler, yazım tekrarı, Dativ ve yer edatları</span></button>
+      </div>
+      <p class="course-gate-note">Ders seçimin bu tarayıcıda hatırlanır. Üst menüden istediğin zaman değiştirebilirsin.</p>
+    </section>
+  </div>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
       <div class="brand" aria-label="Study Lab">
