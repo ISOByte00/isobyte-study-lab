@@ -217,3 +217,25 @@ body.dark #german-root .g-note {
 }
 body.dark #german-root input::placeholder { color:#a7b8c0; opacity:1; }
 body.dark #german-root .g-main>footer { border-color:var(--g-border); }
+
+
+/* German vocabulary voice settings */
+#german-root .g-voice-settings{background:#fff;border:1px solid #dce5e9;border-radius:10px;padding:18px 20px;margin:0 0 20px}
+#german-root .g-voice-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+#german-root .g-voice-heading small{font-size:10px;letter-spacing:.1em;font-weight:800;color:#648398}
+#german-root .g-voice-heading h2{font-size:19px;margin:5px 0;color:#293e49}
+#german-root .g-voice-heading p,#german-root .g-voice-help{font-size:12px;line-height:1.6;color:#687781;margin:0}
+#german-root .g-voice-heading>button{border:1px solid #dce5e9;background:#f5f7f8;color:#4c626e;border-radius:7px;padding:8px 11px;font-size:11px}
+#german-root .g-voice-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0 12px}
+#german-root .g-voice-controls label,#german-root .g-voice-endpoint{display:grid;gap:7px;font-size:12px;font-weight:650;color:#344b56}
+#german-root .g-voice-controls select,#german-root .g-voice-endpoint input{width:100%;min-width:0;border:1px solid #dce5e9;border-radius:7px;background:#fff;color:#293b45;padding:9px 10px}
+#german-root .g-voice-controls input[type=range]{width:100%;accent-color:#285f7d}
+#german-root .g-voice-endpoint{margin:12px 0}
+#german-root .g-voice-help{margin-top:8px}
+body.dark #german-root .g-voice-settings{background:#1b2a32;border-color:#40545e;color:#edf4f6}
+body.dark #german-root .g-voice-heading h2{color:#edf4f6}
+body.dark #german-root .g-voice-heading small{color:#a7c7d6}
+body.dark #german-root .g-voice-heading p,body.dark #german-root .g-voice-help{color:#b6c5cc}
+body.dark #german-root .g-voice-heading>button,body.dark #german-root .g-voice-controls select,body.dark #german-root .g-voice-endpoint input{background:#14232b;color:#edf4f6;border-color:#40545e}
+body.dark #german-root .g-voice-controls label,body.dark #german-root .g-voice-endpoint{color:#dce8ed}
+@media(max-width:620px){#german-root .g-voice-controls{grid-template-columns:1fr}#german-root .g-voice-heading{flex-direction:column}}
