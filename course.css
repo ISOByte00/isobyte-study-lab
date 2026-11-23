@@ -239,3 +239,51 @@ body.dark #german-root .g-voice-heading p,body.dark #german-root .g-voice-help{c
 body.dark #german-root .g-voice-heading>button,body.dark #german-root .g-voice-controls select,body.dark #german-root .g-voice-endpoint input{background:#14232b;color:#edf4f6;border-color:#40545e}
 body.dark #german-root .g-voice-controls label,body.dark #german-root .g-voice-endpoint{color:#dce8ed}
 @media(max-width:620px){#german-root .g-voice-controls{grid-template-columns:1fr}#german-root .g-voice-heading{flex-direction:column}}
+
+
+/* German vocabulary lab layout: card + speech controls, like the English word lab. */
+#german-root .g-filters button.active{background:#e8f1f5;border-color:#8fb0bf;color:#245f7d;font-weight:750}
+#german-root .g-vocab-toolbar{display:flex;gap:9px;align-items:center;margin:8px 0 16px}
+#german-root .g-vocab-toolbar input{flex:1;min-width:0;max-width:520px;border:1px solid #dce5e9;border-radius:8px;background:#fff;color:#273842;padding:11px 13px}
+#german-root .g-vocab-toolbar>button{border:1px solid #dce5e9;background:#fff;color:#476170;padding:9px 12px;border-radius:7px;font-size:11px}
+#german-root .g-vocab-layout{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(300px,.98fr);gap:15px;align-items:start;margin:8px 0 26px}
+#german-root .g-word-study{min-width:0}
+#german-root .g-word-study .g-flash{margin:0 0 10px;min-height:275px}
+#german-root .g-flash-note{max-width:620px;margin:10px 0 0;color:#657780;font-size:12px;line-height:1.6}
+#german-root .g-word-nav{display:grid;gap:10px;padding:12px 0;border-bottom:1px solid #e3e9ec}
+#german-root .g-word-nav>span{font-size:12px;color:#6d7d86;font-weight:650}
+#german-root .g-word-actions{display:flex;gap:7px;flex-wrap:wrap}
+#german-root .g-word-actions button{border:1px solid #dce5e9;background:#fff;color:#476170;border-radius:7px;padding:8px 10px;font-size:11px;font-weight:650}
+#german-root .g-word-actions button:hover{border-color:#9abaca;color:#285f7d;background:#f7fafb}
+#german-root .g-learn-progress{margin:13px 0}
+#german-root .g-learn-progress>div:first-child{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:#687983;margin-bottom:7px}
+#german-root .g-learn-progress b{color:#315d76}
+#german-root .g-voice-settings{height:100%;margin:0 0 20px}
+#german-root .g-voice-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+#german-root .g-voice-playback{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+#german-root .g-voice-playback button{border:0;background:#285f7d;color:#fff;padding:10px 13px;border-radius:7px;font-size:11px;font-weight:750}
+#german-root .g-voice-playback button:disabled{opacity:.45;cursor:not-allowed}
+#german-root .g-voice-playback button[data-a="stop-voice"]{background:#eef2f4;color:#4b606b;border:1px solid #dce5e9}
+#german-root .g-voice-status{font-size:11px;color:#61747e;margin:12px 0 7px;min-height:18px}
+#german-root .g-voice-progress{height:6px;overflow:hidden;border-radius:99px;background:#e9eef0}
+#german-root .g-voice-progress>span{display:block;height:100%;border-radius:inherit;background:#4b8a70;transition:width .15s}
+#german-root .g-word-list button{white-space:nowrap}
+body.dark #german-root .g-filters button.active{background:#294657;border-color:#79abc2;color:#e4f4fa}
+body.dark #german-root .g-vocab-toolbar input,body.dark #german-root .g-vocab-toolbar>button,
+body.dark #german-root .g-word-actions button{background:#1b2a32;color:#edf4f6;border-color:#40545e}
+body.dark #german-root .g-word-actions button:hover{background:#294657;border-color:#79abc2;color:#f1f8fb}
+body.dark #german-root .g-word-nav{border-color:#40545e}
+body.dark #german-root .g-word-nav>span,body.dark #german-root .g-learn-progress>div:first-child,
+body.dark #german-root .g-voice-status{color:#b6c5cc}
+body.dark #german-root .g-flash-note{color:#b6c5cc}
+body.dark #german-root .g-learn-progress b{color:#c9e5ef}
+body.dark #german-root .g-voice-progress{background:#35464e}
+body.dark #german-root .g-voice-playback button[data-a="stop-voice"]{background:#263943;color:#e5eef2;border-color:#40545e}
+@media(max-width:850px){#german-root .g-vocab-layout{grid-template-columns:1fr}}
+@media(max-width:620px){
+ #german-root .g-vocab-toolbar{align-items:stretch;flex-direction:column}
+ #german-root .g-vocab-toolbar input{max-width:none}
+ #german-root .g-word-study .g-flash{min-height:220px}
+ #german-root .g-voice-controls{grid-template-columns:1fr}
+ #german-root .g-word-actions button{flex:1}
+}
