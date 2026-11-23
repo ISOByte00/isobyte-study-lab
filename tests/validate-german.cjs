@@ -31,4 +31,21 @@ assert.ok(data.readings.length >= 3);
 new vm.Script(fs.readFileSync(path.join(root, 'german-app.js'), 'utf8'), { filename: 'german-app.js' });
 new vm.Script(fs.readFileSync(path.join(root, 'subjects.js'), 'utf8'), { filename: 'subjects.js' });
 
-console.log('PASS: ' + data.vocabulary.length + ' German terms, ' + data.grammar.length + ' grammar modules, ' + data.readings.length + ' reading texts; application scripts parse.');
+
+assert.ok(fs.readFileSync(path.join(root, 'german-app.js'), 'utf8').includes('async function speechLoop()'), 'German vocabulary must support sequential playback');
+const germanApp = fs.readFileSync(path.join(root, 'german-app.js'), 'utf8');
+for (const feature of [
+  'id="g-voice-mode"',
+  'id="g-voice-provider"',
+  'id="g-voice-rate"',
+  'id="g-voice-endpoint"',
+  'data-a="speak-all"',
+  'data-a="shuffle"',
+  'data-a="toggle-meanings"',
+  'Almanca → Türkçe → Almanca',
+  "StudyVoice.say(content, lang"
+]) {
+  assert.ok(germanApp.includes(feature), 'Missing German vocabulary feature: ' + feature);
+}
+
+console.log('PASS: ' + data.vocabulary.length + ' German terms, sequential German/Turkish playback, vocabulary controls, grammar, readings and application syntax.');
