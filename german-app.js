@@ -29,14 +29,29 @@
       '<aside class="g-note"><b>Defter ve kitap farkları</b><p>Kitapta <b>der Wohnwagen</b> (çekme karavan), defterde ayrıca <b>das Wohnmobil</b> (motokaravan) var. <b>Das Doppelhaus</b> ikiz/bitişik evdir; dubleks ev demek değildir. Bungalow da doğrudan ahşap ev anlamına gelmez.</p></aside>' +
       '<p class="g-source">Kaynak: Almanca 1. Thema Unterkunft, kitap s.10–19 ve defter notları.</p>';
   }
+  function voicePanel() {
+    const prefs = window.StudyVoice?.prefs;
+    if (!prefs) return '<section class="g-voice-settings"><b>Ses motoru yüklenemedi.</b><p>tts.js dosyasının yüklendiğini kontrol et.</p></section>';
+    const provider = prefs.provider || 'browser';
+    const rate = Number(prefs.rate) || 1;
+    const browserVoice = StudyVoice.bestVoice('de-DE')?.name || 'Cihazında Almanca tarayıcı sesi bulunamadı';
+    return '<section class="g-voice-settings"><div class="g-voice-heading"><div><small>KELİME SESLENDİRME</small><h2>Almanca telaffuzu dinle</h2><p>İngilizce modülündeki ses motoru ve Worker ayarlarıyla aynı yapılandırmayı kullanır.</p></div><button type="button" data-a="stop-voice">■ Durdur</button></div>' +
+      '<div class="g-voice-controls"><label>Ses motoru<select id="g-voice-provider"><option value="browser" ' + (provider === 'browser' ? 'selected' : '') + '>Tarayıcı · ücretsiz</option><option value="google" ' + (provider === 'google' ? 'selected' : '') + '>Google Cloud · HD sesler</option></select></label>' +
+      '<label>Konuşma hızı <strong id="g-voice-rate-value">' + rate.toFixed(2) + '×</strong><input id="g-voice-rate" type="range" min="0.6" max="1.3" step="0.05" value="' + rate + '"></label></div>' +
+      (provider === 'google'
+        ? '<label class="g-voice-endpoint">Cloudflare Worker adresi<input id="g-voice-endpoint" type="url" value="' + esc(prefs.endpoint || '') + '" placeholder="https://....workers.dev" autocomplete="off" spellcheck="false"></label><p class="g-voice-help">Google Cloud API anahtarını buraya yazma. Anahtar Worker tarafında Secret olarak kalmalı. Almanca kelimeler Worker’a <b>de-DE</b> diliyle gönderilir.</p>'
+        : '<p class="g-voice-help">Tarayıcı sesi: <b>' + esc(browserVoice) + '</b>. Almanca ses yoksa Google Cloud · HD sesler seçeneğine geçip Worker adresini gir.</p>') +
+      '</section>';
+  }
   function vocab() {
     const list = words(), w = list.length ? list[U.index % list.length] : null;
     return title('KELİME EZBERİ','Kelime Kartları','Her kelimeyi artikeliyle ve doğru yazımıyla öğren. Türkçe anlamdan Almanca kelimeye geç.') +
+      voicePanel() +
       '<div class="g-filters"><button data-a="group" data-v="all">Tümü (' + D.vocabulary.length + ')</button>' + D.groups.map(g => '<button data-a="group" data-v="' + g.id + '">' + esc(g.label) + ' (' + D.vocabulary.filter(w => w.group === g.id).length + ')</button>').join('') + '</div>' +
       '<input id="g-search" placeholder="Kelime veya anlam ara..." value="' + esc(U.search) + '">' +
       (w ? '<section class="g-flash" data-a="flip"><small>' + (U.flip ? 'ALMANCA · DOĞRU YAZIM' : 'TÜRKÇE ANLAM') + '</small><strong>' + esc(U.flip ? w.term : w.meaning) + '</strong><span>' + (U.flip ? 'Artikel + isim birlikte ezberlenmeli.' : 'Cevabı görmek için karta dokun.') + '</span></section>' +
-      '<div class="g-actions"><button data-a="prev">← Önceki</button><button data-a="flip">Cevabı göster</button><button data-a="next">Sonraki →</button><button data-a="speak" data-id="' + w.id + '">🔊</button><button data-a="known" data-id="' + w.id + '">' + (S.known.includes(w.id) ? '✓ Öğrendim' : 'Öğrendim') + '</button></div>' : '<p>Aramayla eşleşen kelime yok.</p>') +
-      '<h2>Kelime listesi · ' + list.length + '</h2><div class="g-word-list">' + list.map(w => '<div><b>' + esc(w.term) + '</b><span>' + esc(w.meaning) + '</span><button data-a="speak" data-id="' + w.id + '">🔊</button><button data-a="known" data-id="' + w.id + '">' + (S.known.includes(w.id) ? '✓' : 'Öğrendim') + '</button></div>').join('') + '</div>';
+      '<div class="g-actions"><button data-a="prev">← Önceki</button><button data-a="flip">Cevabı göster</button><button data-a="next">Sonraki →</button><button data-a="speak" data-id="' + w.id + '">🔊 Dinle</button><button data-a="known" data-id="' + w.id + '">' + (S.known.includes(w.id) ? '✓ Öğrendim' : 'Öğrendim') + '</button></div>' : '<p>Aramayla eşleşen kelime yok.</p>') +
+      '<h2>Kelime listesi · ' + list.length + '</h2><div class="g-word-list">' + list.map(w => '<div><b>' + esc(w.term) + '</b><span>' + esc(w.meaning) + '</span><button data-a="speak" data-id="' + w.id + '">🔊 Dinle</button><button data-a="known" data-id="' + w.id + '">' + (S.known.includes(w.id) ? '✓' : 'Öğrendim') + '</button></div>').join('') + '</div>';
   }
   function nextSpell() {
     const pool = S.mistakes.length ? D.vocabulary.filter(w => S.mistakes.includes(w.id)) : D.vocabulary;
@@ -84,7 +99,7 @@
     if ($('#german-root')) return;
     const r=document.createElement('div'); r.id='german-root';
     r.innerHTML='<div class="g-shell"><aside class="g-sidebar"><div class="g-brand"><b>DE</b><span><strong>Deutsch</strong><small>ISOByte Study Lab</small></span></div><small class="g-nav-label">ALMANCA · 1. ÜNİTE</small><nav>'+Object.entries(pages).map(x=>'<button data-a="go" data-p="'+x[0]+'">'+x[1]+'</button>').join('')+'</nav><button class="g-switch" data-a="switch">⇄ Dersi değiştir</button></aside><div class="g-main"><header><button data-a="menu">☰</button><span>11. Sınıf / Almanca / <b id="g-crumb">Genel Bakış</b></span><button data-a="switch">Dersi değiştir</button></header><main id="g-view"></main><footer>© 2026 ISOByte · Almanca 1. Thema · Kitap s.10–19 ve defter notları</footer></div></div><div id="g-toast"></div>';
-    document.body.append(r); r.addEventListener('click',click); r.addEventListener('input',input); r.addEventListener('submit',submit); render();
+    document.body.append(r); r.addEventListener('click',click); r.addEventListener('input',input); r.addEventListener('change',change); r.addEventListener('submit',submit); render();
   }
   function render() {
     if (!$('#german-root')) return;
@@ -95,7 +110,16 @@
   }
   function speak(t) {
     if (!window.StudyVoice) return toast('Ses motoru yüklenemedi.');
-    try { const k=StudyVoice.start(); StudyVoice.say(t,'de-DE',0.95,k).then(ok=>{if(!ok)toast('Almanca ses paketi bulunamadı.');}).catch(()=>toast('Seslendirme başarısız.')); } catch (_) { toast('Seslendirme kullanılamıyor.'); }
+    try {
+      const rate = Number(StudyVoice.prefs.rate) || 1;
+      const provider = StudyVoice.prefs.provider || 'browser';
+      const k = StudyVoice.start();
+      StudyVoice.say(t, 'de-DE', rate, k).then(ok => {
+        if (!ok) toast(provider === 'google'
+          ? 'Google Cloud seslendirmesi tamamlanamadı. Worker adresini ve ayarlarını kontrol et.'
+          : 'Almanca tarayıcı sesi bulunamadı. Google Cloud · HD sesler seçeneğini kullan.');
+      }).catch(err => toast(err?.message || 'Almanca seslendirme başarısız.'));
+    } catch (err) { toast(err?.message || 'Seslendirme kullanılamıyor.'); }
   }
   function checkSpell() {
     U.spellAnswer=$('#g-spell-input')?.value || U.spellAnswer;
@@ -110,6 +134,7 @@
     const b=e.target.closest('[data-a]'); if(!b)return; const a=b.dataset.a;
     if(a==='go'){U.page=b.dataset.p;U.menu=false;render();scrollTo(0,0);}
     else if(a==='switch')window.dispatchEvent(new CustomEvent('isobyte:choose-course'));
+    else if(a==='stop-voice'){StudyVoice?.stop();toast('Ses durduruldu.');}
     else if(a==='menu'){U.menu=!U.menu;render();}
     else if(a==='group'){U.group=b.dataset.v;U.index=0;U.flip=false;render();}
     else if(a==='flip'){U.flip=!U.flip;render();}
@@ -131,6 +156,22 @@
     if(t.id==='g-search'){const p=t.selectionStart;U.search=t.value;render();const n=$('#g-search');n?.focus();n?.setSelectionRange(p,p);}
     else if(t.id==='g-spell-input')U.spellAnswer=t.value;
     else if(t.id==='g-q-answer')U.quiz.ans=t.value;
+    else if(t.id==='g-voice-rate'){
+      StudyVoice?.setPref('rate', t.value);
+      const label=$('#g-voice-rate-value'); if(label) label.textContent=(Number(t.value)||1).toFixed(2)+'×';
+    }
+  }
+  function change(e){
+    const t=e.target;
+    if(t.id==='g-voice-provider'){
+      StudyVoice?.stop();
+      StudyVoice?.setPref('provider',t.value);
+      render();
+      toast(t.value==='google'?'Google Cloud · HD sesler seçildi.':'Tarayıcı sesi seçildi.');
+    } else if(t.id==='g-voice-endpoint'){
+      StudyVoice?.setPref('endpoint',t.value);
+      toast('Worker adresi kaydedildi.');
+    }
   }
   function submit(e){if(e.target.id==='g-spell-form'){e.preventDefault();checkSpell();}}
   window.GermanStudy={mount,render};
