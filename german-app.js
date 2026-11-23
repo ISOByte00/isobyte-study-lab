@@ -10,7 +10,7 @@
   const S = Object.assign(fresh(), old, { spelling: Object.assign(fresh().spelling, old.spelling || {}) });
   if (!Array.isArray(S.known)) S.known = [];
   if (!Array.isArray(S.mistakes)) S.mistakes = [];
-  const U = { page: 'home', group: 'all', search: '', index: 0, flip: false, shuffleIds: [], showMeanings: true, speech: { active: false, index: 0, total: 0, token: 0, part: '' }, spell: null, spellAnswer: '', spellChecked: false, quiz: null, exam: false, menu: false };
+  const U = { page: 'home', group: 'all', search: '', index: 0, flip: true, shuffleIds: [], showMeanings: true, speech: { active: false, index: 0, total: 0, token: 0, part: '' }, spell: null, spellAnswer: '', spellChecked: false, quiz: null, exam: false, menu: false };
   const pages = { home: 'Genel Bakış', vocab: 'Kelime Kartları', spelling: 'Yazım Çalışması', grammar: 'Konu Anlatımı', practice: 'Alıştırma Merkezi', reading: 'Okuma Çalışması', exam: 'Yazılı Provası' };
   const $ = s => document.querySelector(s);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -311,7 +311,7 @@
       stopVoice(false);
       U.group = b.dataset.v;
       U.index = 0;
-      U.flip = false;
+      U.flip = true;
       U.shuffleIds = [];
       render();
     } else if (a === 'flip') {
@@ -322,13 +322,13 @@
       const n = deck().length;
       if (!n) return;
       U.index = (U.index + (a === 'next' ? 1 : -1) + n) % n;
-      U.flip = false;
+      U.flip = true;
       render();
     } else if (a === 'shuffle') {
       stopVoice(false);
       U.shuffleIds = shuffle(words().map(w => w.id));
       U.index = 0;
-      U.flip = false;
+      U.flip = true;
       render();
     } else if (a === 'toggle-meanings') {
       U.showMeanings = !U.showMeanings;
