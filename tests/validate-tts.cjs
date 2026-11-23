@@ -28,4 +28,8 @@ new vm.Script(fs.readFileSync(path.join(root, 'tts.js'), 'utf8'), { filename: 't
 new vm.Script(fs.readFileSync(path.join(root, 'app.js'), 'utf8'), { filename: 'app.js' });
 new vm.Script(fs.readFileSync(path.join(root, 'german-app.js'), 'utf8'), { filename: 'german-app.js' });
 
+assert(engine.includes("indexedDB.open('isobyte_cloud_tts_audio_v1'"));
+assert(engine.includes('const audioMemory = new Map()') || engine.includes('const audioMemory=new Map()'));
+assert(engine.includes('JSON.stringify([url,lang,text])'), 'Audio cache must be keyed by Worker, language and exact text');
+assert(engine.includes('readCachedAudio(cacheKey)') && engine.includes('saveCachedAudio(cacheKey,blob)'));
 console.log('PASS: browser and Google Cloud Worker TTS, German de-DE playback controls, shared preferences, no API key in the client.');
