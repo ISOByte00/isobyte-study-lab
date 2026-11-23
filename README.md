@@ -4,7 +4,7 @@
 
 **Önerilen depo adı:** `isobyte-study-lab`
 
-**Şu anki site adresi:** https://isobyte00.github.io/1.1-ing-yazili/
+**Şu anki site adresi:** https://isobyte00.github.io/isobyte-study-lab/
 
 ## Dersler
 
