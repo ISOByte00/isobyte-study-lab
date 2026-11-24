@@ -89,7 +89,7 @@ for (const groupId of ['all', ...data.groups.map(group => group.id)]) {
   const expected = groupId === 'all'
     ? data.vocabulary
     : data.vocabulary.filter(word => word.group === groupId);
-  assert.equal(spellingTests.U.spell.group, groupId === 'all' ? spellingTests.U.spell.group : groupId);
+  assert.ok(expected.some(word => word.id === spellingTests.U.spell.id), groupId + ' must start with a word from its own pool');
   assert.equal(spellingTests.U.spellQueue.length, expected.length - 1, groupId + ' should queue every word exactly once');
 
   const firstId = spellingTests.U.spell.id;
@@ -103,7 +103,7 @@ for (const groupId of ['all', ...data.groups.map(group => group.id)]) {
   while (!spellingTests.U.spellRoundDone && safety-- > 0) {
     const current = spellingTests.U.spell;
     assert.equal(current.group === groupId || groupId === 'all', true, 'Question must stay inside selected topic');
-    assert.equal(spellingTests.submitSpellAnswer(current.term.replace(/^(der|die|das)\\s+/i, '')), true);
+    assert.equal(spellingTests.submitSpellAnswer(current.term), true);
     if (!spellingTests.U.spellRoundDone) {
       spellingTests.nextSpell();
       served.push(spellingTests.U.spell.id);
@@ -121,6 +121,14 @@ spellingTests.startSpellRound();
 const firstRoom = spellingTests.U.spell.id;
 assert.equal(spellingTests.submitSpellAnswer('wrong-room-answer'), false);
 spellingTests.U.page = 'spelling';
+let controlPrevented = false;
+spellingTests.handleSpellKeydown({
+  key: 'Enter',
+  target: { closest: () => ({}) },
+  preventDefault: () => { controlPrevented = true; }
+});
+assert.equal(controlPrevented, false, 'Enter on a focused button must remain available to that button');
+assert.equal(spellingTests.U.spell.id, firstRoom, 'Focused controls must not trigger a background advance');
 let prevented = false;
 spellingTests.handleSpellKeydown({
   key: 'Enter',
