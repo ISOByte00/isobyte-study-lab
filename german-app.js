@@ -354,7 +354,7 @@
   }
   function handleSpellKeydown(e) {
     if (e.key !== 'Enter' || U.page !== 'spelling' || !U.spellChecked) return;
-    if (e.target?.closest?.('[data-a="spell-next"], [data-a="spell-restart"]')) return;
+    if (e.target?.closest?.('button, a, input, textarea, select, [role="button"]')) return;
     e.preventDefault();
     advanceSpell();
   }
