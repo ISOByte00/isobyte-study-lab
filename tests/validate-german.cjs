@@ -55,4 +55,46 @@ for (const feature of [
   assert.ok(germanApp.includes(feature), 'Missing German vocabulary feature: ' + feature);
 }
 
+
+const instrumentedGermanApp = germanApp.replace(
+  'window.GermanStudy={mount,render};',
+  'window.GermanStudy={mount,render,__test:{U,S,nextSpell,spelling,spellingAnswerMatches,quizAnswerCorrect}};'
+);
+assert.notEqual(instrumentedGermanApp, germanApp, 'German app test hooks must be attached');
+const appSandbox = {
+  window: { GERMAN_STUDY_DATA: data },
+  localStorage: { getItem: () => null, setItem: () => {} }
+};
+vm.runInNewContext(instrumentedGermanApp, appSandbox);
+const spellingTests = appSandbox.window.GermanStudy.__test;
+
+for (const [answer, term] of [
+  ['kueche', 'die Küche'],
+  ['gross', 'groß'],
+  ['fuer', 'für'],
+  ['schuelerheim', 'das Schülerheim'],
+  ['Wohnung', 'die Wohnung'],
+  ['DIE KÜCHE', 'die Küche']
+]) {
+  assert.equal(spellingTests.spellingAnswerMatches(answer, term), true, answer + ' should match ' + term);
+}
+assert.equal(spellingTests.spellingAnswerMatches('kuche', 'die Küche'), false, 'Missing umlaut transliteration should not pass');
+assert.equal(spellingTests.spellingAnswerMatches('zimmer', 'die Küche'), false, 'A different word must not pass');
+assert.equal(spellingTests.quizAnswerCorrect({ kind: 'spelling', a: 'die Küche' }, 'kueche'), true, 'Spelling questions must use tolerant comparison');
+
+spellingTests.U.spellGroup = 'rooms';
+spellingTests.S.mistakes = [];
+spellingTests.nextSpell();
+assert.equal(spellingTests.U.spell.group, 'rooms', 'Selected topic must limit spelling questions');
+spellingTests.S.mistakes = ['kueche'];
+spellingTests.nextSpell();
+assert.equal(spellingTests.U.spell.id, 'kueche', 'Mistakes in the selected topic should be prioritized');
+spellingTests.U.spellGroup = 'homes';
+spellingTests.nextSpell();
+assert.equal(spellingTests.U.spell.group, 'homes', 'Mistakes from another topic must not leak into the selected topic');
+
+const spellingHtml = spellingTests.spelling();
+for (const label of ['Ev türleri', 'Odalar', 'Mobilyalar', 'Sıfatlar', 'Fiiller', 'Edatlar', 'Artikel yazman gerekmiyor']) {
+  assert.ok(spellingHtml.includes(label), 'Missing spelling UI element: ' + label);
+}
 console.log('PASS: ' + data.vocabulary.length + ' German terms, sequential German/Turkish playback, vocabulary controls, grammar, readings and application syntax.');
