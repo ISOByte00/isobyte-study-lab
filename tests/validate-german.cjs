@@ -58,12 +58,13 @@ for (const feature of [
 
 const instrumentedGermanApp = germanApp.replace(
   'window.GermanStudy={mount,render};',
-  'window.GermanStudy={mount,render,__test:{U,S,nextSpell,spelling,spellingAnswerMatches,quizAnswerCorrect}};'
+  'window.GermanStudy={mount,render,__test:{U,S,nextSpell,startSpellRound,spellWordsForGroup,spelling,spellingAnswerMatches,quizAnswerCorrect,submitSpellAnswer,handleSpellKeydown}};'
 );
 assert.notEqual(instrumentedGermanApp, germanApp, 'German app test hooks must be attached');
 const appSandbox = {
   window: { GERMAN_STUDY_DATA: data },
-  localStorage: { getItem: () => null, setItem: () => {} }
+  localStorage: { getItem: () => null, setItem: () => {} },
+  document: { querySelector: () => null, addEventListener: () => {} },
 };
 vm.runInNewContext(instrumentedGermanApp, appSandbox);
 const spellingTests = appSandbox.window.GermanStudy.__test;
@@ -82,16 +83,53 @@ assert.equal(spellingTests.spellingAnswerMatches('kuche', 'die Küche'), false, 
 assert.equal(spellingTests.spellingAnswerMatches('zimmer', 'die Küche'), false, 'A different word must not pass');
 assert.equal(spellingTests.quizAnswerCorrect({ kind: 'spelling', a: 'die Küche' }, 'kueche'), true, 'Spelling questions must use tolerant comparison');
 
+for (const groupId of ['all', ...data.groups.map(group => group.id)]) {
+  spellingTests.U.spellGroup = groupId;
+  spellingTests.startSpellRound();
+  const expected = groupId === 'all'
+    ? data.vocabulary
+    : data.vocabulary.filter(word => word.group === groupId);
+  assert.equal(spellingTests.U.spell.group, groupId === 'all' ? spellingTests.U.spell.group : groupId);
+  assert.equal(spellingTests.U.spellQueue.length, expected.length - 1, groupId + ' should queue every word exactly once');
+
+  const firstId = spellingTests.U.spell.id;
+  assert.equal(spellingTests.submitSpellAnswer('deliberately-wrong-' + firstId), false);
+  assert.equal(spellingTests.U.spellQueue.at(-1), firstId, groupId + ' wrong answer must move to the queue end');
+  spellingTests.nextSpell();
+  assert.notEqual(spellingTests.U.spell.id, firstId, groupId + ' must not immediately repeat a wrong word');
+
+  const served = [firstId, spellingTests.U.spell.id];
+  let safety = expected.length * 2 + 2;
+  while (!spellingTests.U.spellRoundDone && safety-- > 0) {
+    const current = spellingTests.U.spell;
+    assert.equal(current.group === groupId || groupId === 'all', true, 'Question must stay inside selected topic');
+    assert.equal(spellingTests.submitSpellAnswer(current.term.replace(/^(der|die|das)\\s+/i, '')), true);
+    if (!spellingTests.U.spellRoundDone) {
+      spellingTests.nextSpell();
+      served.push(spellingTests.U.spell.id);
+    }
+  }
+  assert.equal(spellingTests.U.spellRoundDone, true, groupId + ' should complete after every word is answered correctly');
+  assert.equal(spellingTests.U.spellQueue.length, 0, groupId + ' completed queue should be empty');
+  assert.equal(served.length, expected.length + 1, groupId + ' should repeat only the deliberately missed word');
+  assert.equal(served.at(-1), firstId, groupId + ' missed word should return after all other words');
+  assert.equal(new Set(served.slice(1)).size, expected.length, groupId + ' should present every word before repeating');
+}
+
 spellingTests.U.spellGroup = 'rooms';
-spellingTests.S.mistakes = [];
-spellingTests.nextSpell();
-assert.equal(spellingTests.U.spell.group, 'rooms', 'Selected topic must limit spelling questions');
-spellingTests.S.mistakes = ['kueche'];
-spellingTests.nextSpell();
-assert.equal(spellingTests.U.spell.id, 'kueche', 'Mistakes in the selected topic should be prioritized');
-spellingTests.U.spellGroup = 'homes';
-spellingTests.nextSpell();
-assert.equal(spellingTests.U.spell.group, 'homes', 'Mistakes from another topic must not leak into the selected topic');
+spellingTests.startSpellRound();
+const firstRoom = spellingTests.U.spell.id;
+assert.equal(spellingTests.submitSpellAnswer('wrong-room-answer'), false);
+spellingTests.U.page = 'spelling';
+let prevented = false;
+spellingTests.handleSpellKeydown({
+  key: 'Enter',
+  target: { closest: () => null },
+  preventDefault: () => { prevented = true; }
+});
+assert.equal(prevented, true, 'Enter after checking should prevent default and advance');
+assert.notEqual(spellingTests.U.spell.id, firstRoom, 'Enter should load the next queued word');
+assert.equal(spellingTests.U.spellChecked, false, 'Next word should be ready for an answer');
 
 const spellingHtml = spellingTests.spelling();
 for (const label of ['Ev türleri', 'Odalar', 'Mobilyalar', 'Sıfatlar', 'Fiiller', 'Edatlar', 'Artikel yazman gerekmiyor']) {
