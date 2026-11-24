@@ -10,7 +10,7 @@
   const S = Object.assign(fresh(), old, { spelling: Object.assign(fresh().spelling, old.spelling || {}) });
   if (!Array.isArray(S.known)) S.known = [];
   if (!Array.isArray(S.mistakes)) S.mistakes = [];
-  const U = { page: 'home', group: 'all', search: '', index: 0, flip: true, shuffleIds: [], showMeanings: true, speech: { active: false, index: 0, total: 0, token: 0, part: '' }, spell: null, spellGroup: 'all', spellAnswer: '', spellChecked: false, quiz: null, exam: false, menu: false };
+  const U = { page: 'home', group: 'all', search: '', index: 0, flip: true, shuffleIds: [], showMeanings: true, speech: { active: false, index: 0, total: 0, token: 0, part: '' }, spell: null, spellGroup: 'all', spellQueue: [], spellRoundDone: false, spellAnswer: '', spellChecked: false, quiz: null, exam: false, menu: false };
   const pages = { home: 'Genel Bakış', vocab: 'Kelime Kartları', spelling: 'Yazım Çalışması', grammar: 'Konu Anlatımı', practice: 'Alıştırma Merkezi', reading: 'Okuma Çalışması', exam: 'Yazılı Provası' };
   const $ = s => document.querySelector(s);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -148,30 +148,54 @@
   function spellingAnswerMatches(answer, term) {
     return normalizeGermanAnswer(answer) === normalizeGermanAnswer(term);
   }
-  function nextSpell() {
-    const groupWords = U.spellGroup === 'all'
+  function spellWordsForGroup() {
+    return U.spellGroup === 'all'
       ? D.vocabulary
       : D.vocabulary.filter(w => w.group === U.spellGroup);
-    const missedWords = groupWords.filter(w => S.mistakes.includes(w.id));
-    const pool = missedWords.length ? missedWords : groupWords;
-    U.spell = rand(pool.length ? pool : D.vocabulary);
+  }
+  function nextSpell() {
+    const nextId = U.spellQueue.shift();
+    U.spell = nextId ? D.vocabulary.find(w => w.id === nextId) || null : null;
     U.spellAnswer = '';
     U.spellChecked = false;
+    if (!U.spell) U.spellRoundDone = true;
+  }
+  function startSpellRound() {
+    U.spellQueue = shuffle(spellWordsForGroup().map(w => w.id));
+    U.spellRoundDone = false;
+    U.spell = null;
+    nextSpell();
+  }
+  function advanceSpell() {
+    if (!U.spellChecked) return;
+    if (U.spellRoundDone) startSpellRound();
+    else nextSpell();
+    render();
+    $('#g-spell-input')?.focus();
   }
   function spelling() {
-    if (!U.spell) nextSpell();
-    const w = U.spell;
-    const ok = spellingAnswerMatches(U.spellAnswer, w.term);
+    if (!U.spell && !U.spellRoundDone) startSpellRound();
     const selectedGroup = D.groups.find(g => g.id === U.spellGroup);
+    const groupWords = spellWordsForGroup();
+    const groupName = selectedGroup ? selectedGroup.label : 'Tüm konular';
     const groups = '<div class="g-filters g-spell-filters">' +
       '<button type="button" data-a="spell-group" data-v="all" class="' + (U.spellGroup === 'all' ? 'active' : '') + '">Tüm konular (' + D.vocabulary.length + ')</button>' +
       D.groups.map(g => '<button type="button" data-a="spell-group" data-v="' + g.id + '" class="' + (U.spellGroup === g.id ? 'active' : '') + '">' + esc(g.label) + ' (' + D.vocabulary.filter(word => word.group === g.id).length + ')</button>').join('') +
       '</div>';
-    return title('YAZIM VE HAFIZA','Almanca Yazım Çalışması','Kelimeleri tek tek veya konu gruplarına ayırarak test et. Her kelimenin Türkçe anlamını görüp Almancasını yaz.') +
-      groups +
-      '<section class="g-spell"><small>' + esc(selectedGroup ? selectedGroup.label : 'TÜM KONULAR') + '</small><h2>' + esc(w.meaning) + '</h2><p>Artikel yazman gerekmiyor. Almanca klavye kullanmadan da yazabilirsin: <b>ä = ae, ö = oe, ü = ue, ß = ss</b>. Büyük/küçük harf farkı aranmaz.</p><form id="g-spell-form"><input id="g-spell-input" value="' + esc(U.spellAnswer) + '" placeholder="Almanca kelimeyi yaz..." autocomplete="off" spellcheck="false" ' + (U.spellChecked ? 'disabled' : '') + '><button ' + (U.spellChecked ? 'disabled' : '') + '>Kontrol et</button></form>' +
-      (U.spellChecked ? '<div class="g-feedback ' + (ok ? 'ok' : 'bad') + '"><b>' + (ok ? '✓ Doğru' : '✕ Tekrar dene') + '</b><p>Doğru kelime: <strong>' + esc(spellingTerm(w.term)) + '</strong></p>' + (w.note ? '<small>' + esc(w.note) + '</small>' : '') + '</div><button data-a="spell-next">Sonraki kelime →</button>' : '') +
-      '<p class="g-source">Deneme: ' + S.spelling.attempts + ' · Doğru: ' + S.spelling.correct + ' · Yanlış: ' + S.spelling.wrong + ' · Tekrar edilecek kelime: ' + S.mistakes.length + '</p></section>';
+    const header = title('YAZIM VE HAFIZA','Almanca Yazım Çalışması','Her kategorideki kelimeleri sırayla öğren. Doğru bildiklerin turdan çıkar, yanlış bildiklerin sona geçer.');
+    if (U.spellRoundDone || !U.spell) {
+      return header + groups +
+        '<section class="g-spell g-spell-complete"><small>' + esc(groupName) + '</small><h2>Hepsini doğru bildin!</h2><p>Bu kategorideki ' + groupWords.length + ' kelimenin tamamını doğru yazdın.</p><button type="button" data-a="spell-restart">Yeniden yazmaya başla</button></section>' +
+        '<p class="g-source">Deneme: ' + S.spelling.attempts + ' · Doğru: ' + S.spelling.correct + ' · Yanlış: ' + S.spelling.wrong + '</p>';
+    }
+    const w = U.spell;
+    const ok = spellingAnswerMatches(U.spellAnswer, w.term);
+    const remaining = U.spellQueue.length + (U.spellChecked ? 0 : 1);
+    const completed = Math.max(0, groupWords.length - remaining);
+    return header + groups +
+      '<section class="g-spell"><small>' + esc(groupName) + ' · ' + completed + '/' + groupWords.length + ' kelime tamamlandı</small><h2>' + esc(w.meaning) + '</h2><p>Artikel yazman gerekmiyor. Almanca klavye kullanmadan da yazabilirsin: <b>ä = ae, ö = oe, ü = ue, ß = ss</b>. Büyük/küçük harf farkı aranmaz.</p><form id="g-spell-form"><input id="g-spell-input" value="' + esc(U.spellAnswer) + '" placeholder="Almanca kelimeyi yaz..." autocomplete="off" spellcheck="false" ' + (U.spellChecked ? 'disabled' : '') + '><button ' + (U.spellChecked ? 'disabled' : '') + '>Kontrol et · Enter</button></form>' +
+      (U.spellChecked ? '<div class="g-feedback ' + (ok ? 'ok' : 'bad') + '"><b>' + (ok ? '✓ Doğru' : '✕ Tekrar dene') + '</b><p>Doğru kelime: <strong>' + esc(spellingTerm(w.term)) + '</strong></p>' + (w.note ? '<small>' + esc(w.note) + '</small>' : '') + '</div><button type="button" data-a="spell-next">Sonraki kelime · Enter ↵</button>' : '') +
+      '<p class="g-source">Kalan kelime: ' + remaining + ' · Deneme: ' + S.spelling.attempts + ' · Doğru: ' + S.spelling.correct + ' · Yanlış: ' + S.spelling.wrong + '</p></section>';
   }
   function grammar() {
     return title('KONU ANLATIMI','Dil Bilgisi','Defterdeki cümle yapıları ve kitabın 1. ünitesindeki Dativ / yer edatları.') +
@@ -207,7 +231,7 @@
     if ($('#german-root')) return;
     const r=document.createElement('div'); r.id='german-root';
     r.innerHTML='<div class="g-shell"><aside class="g-sidebar"><div class="g-brand"><b>DE</b><span><strong>Deutsch</strong><small>ISOByte Study Lab</small></span></div><small class="g-nav-label">ALMANCA · 1. ÜNİTE</small><nav>'+Object.entries(pages).map(x=>'<button data-a="go" data-p="'+x[0]+'">'+x[1]+'</button>').join('')+'</nav><button class="g-switch" data-a="switch">⇄ Dersi değiştir</button></aside><div class="g-main"><header><button data-a="menu">☰</button><span>11. Sınıf / Almanca / <b id="g-crumb">Genel Bakış</b></span><button data-a="switch">Dersi değiştir</button></header><main id="g-view"></main><footer>© 2026 ISOByte · Almanca 1. Thema · Kitap s.10–19 ve defter notları</footer></div></div><div id="g-toast"></div>';
-    document.body.append(r); r.addEventListener('click',click); r.addEventListener('input',input); r.addEventListener('change',change); r.addEventListener('submit',submit); render();
+    document.body.append(r); r.addEventListener('click',click); r.addEventListener('input',input); r.addEventListener('change',change); r.addEventListener('submit',submit); document.addEventListener('keydown',handleSpellKeydown); render();
   }
   function render() {
     if (!$('#german-root')) return;
@@ -303,12 +327,36 @@
       toast('Sesli tekrar tamamlandı.');
     }
   }
+  function submitSpellAnswer(answer) {
+    if (!U.spell || U.spellChecked) return null;
+    U.spellAnswer = String(answer == null ? '' : answer);
+    if (!U.spellAnswer.trim()) return null;
+    const ok = spellingAnswerMatches(U.spellAnswer, U.spell.term);
+    S.spelling.attempts++;
+    if (ok) {
+      S.spelling.correct++;
+      S.mistakes = S.mistakes.filter(x => x !== U.spell.id);
+    } else {
+      S.spelling.wrong++;
+      if (!S.mistakes.includes(U.spell.id)) S.mistakes.push(U.spell.id);
+      U.spellQueue.push(U.spell.id);
+    }
+    U.spellChecked = true;
+    U.spellRoundDone = ok && U.spellQueue.length === 0;
+    save();
+    return ok;
+  }
   function checkSpell() {
-    U.spellAnswer=$('#g-spell-input')?.value ?? U.spellAnswer;
-    if (!U.spellAnswer.trim()) return toast('Önce cevap yaz.');
-    const ok=spellingAnswerMatches(U.spellAnswer,U.spell.term);
-    S.spelling.attempts++; if(ok){S.spelling.correct++;S.mistakes=S.mistakes.filter(x=>x!==U.spell.id);}else{S.spelling.wrong++;if(!S.mistakes.includes(U.spell.id))S.mistakes.push(U.spell.id);}
-    U.spellChecked=true;save();render();
+    const answer = $('#g-spell-input')?.value ?? U.spellAnswer;
+    if (!String(answer).trim()) return toast('Önce cevap yaz.');
+    if (submitSpellAnswer(answer) === null) return;
+    render();
+  }
+  function handleSpellKeydown(e) {
+    if (e.key !== 'Enter' || U.page !== 'spelling' || !U.spellChecked) return;
+    if (e.target?.closest?.('[data-a="spell-next"], [data-a="spell-restart"]')) return;
+    e.preventDefault();
+    advanceSpell();
   }
   function quizAnswerCorrect(q, answer) {
     return q.kind === 'spelling' ? spellingAnswerMatches(answer, q.a) : answer === q.a;
@@ -376,11 +424,15 @@
       speak(b.dataset.text || '');
     } else if (a === 'spell-group') {
       U.spellGroup = b.dataset.v || 'all';
-      nextSpell();
+      startSpellRound();
       render();
+      $('#g-spell-input')?.focus();
     } else if (a === 'spell-next') {
-      nextSpell();
+      advanceSpell();
+    } else if (a === 'spell-restart') {
+      startSpellRound();
       render();
+      $('#g-spell-input')?.focus();
     } else if (a === 'option') {
       if (!U.quiz.checked) {
         U.quiz.ans = b.dataset.v;
