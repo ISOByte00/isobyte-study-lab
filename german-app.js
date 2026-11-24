@@ -134,16 +134,16 @@
       ).join('') + '</div>';
   }
   function spellingTerm(term) {
-    return String(term || '').replace(/^(der|die|das)\\s+/i, '');
+    return String(term || '').replace(/^(der|die|das)\s+/i, '');
   }
   function normalizeGermanAnswer(value) {
     return String(value == null ? '' : value)
       .normalize('NFC')
       .trim()
       .toLocaleLowerCase('de')
-      .replace(/^(der|die|das)\\s+/, '')
+      .replace(/^(der|die|das)\s+/, '')
       .replace(/[äöüß]/g, ch => ({ ä: 'ae', ö: 'oe', ü: 'ue', ß: 'ss' })[ch])
-      .replace(/\\s+/g, ' ');
+      .replace(/\s+/g, ' ');
   }
   function spellingAnswerMatches(answer, term) {
     return normalizeGermanAnswer(answer) === normalizeGermanAnswer(term);
