@@ -10,7 +10,7 @@
   const S = Object.assign(fresh(), old, { spelling: Object.assign(fresh().spelling, old.spelling || {}) });
   if (!Array.isArray(S.known)) S.known = [];
   if (!Array.isArray(S.mistakes)) S.mistakes = [];
-  const U = { page: 'home', group: 'all', search: '', index: 0, flip: true, shuffleIds: [], showMeanings: true, speech: { active: false, index: 0, total: 0, token: 0, part: '' }, spell: null, spellAnswer: '', spellChecked: false, quiz: null, exam: false, menu: false };
+  const U = { page: 'home', group: 'all', search: '', index: 0, flip: true, shuffleIds: [], showMeanings: true, speech: { active: false, index: 0, total: 0, token: 0, part: '' }, spell: null, spellGroup: 'all', spellAnswer: '', spellChecked: false, quiz: null, exam: false, menu: false };
   const pages = { home: 'Genel Bakış', vocab: 'Kelime Kartları', spelling: 'Yazım Çalışması', grammar: 'Konu Anlatımı', practice: 'Alıştırma Merkezi', reading: 'Okuma Çalışması', exam: 'Yazılı Provası' };
   const $ = s => document.querySelector(s);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -37,7 +37,7 @@
   function title(k, h, p) { return '<header class="g-title"><small>' + esc(k) + '</small><h1>' + esc(h) + '</h1><p>' + esc(p) + '</p></header>'; }
   function home() {
     const n = D.vocabulary.length, pct = Math.round(S.known.length / n * 100), sp = S.spelling;
-    const cards = [['vocab','01','Kelime kartları','Ev türleri, odalar, mobilyalar ve diğer kelimeler.'],['spelling','02','Yazım testi','Türkçesini gör; Almancasını artikel ve doğru harflerle yaz.'],['grammar','03','Dil bilgisi','möchten, Dativ, Wechselpräpositionen ve cümle yapıları.'],['practice','04','Alıştırma merkezi','Karışık sorularla bilgini kontrol et.'],['reading','05','Okuma','Kitaptaki Murat, Eylül ve Melanie metinleri.'],['exam','06','Yazılı provası','20 soruluk kapsamlı ünite provası.']];
+    const cards = [['vocab','01','Kelime kartları','Ev türleri, odalar, mobilyalar ve diğer kelimeler.'],['spelling','02','Yazım testi','Türkçe anlamdan Almanca kelimeyi yaz; konu konu ilerle.'],['grammar','03','Dil bilgisi','möchten, Dativ, Wechselpräpositionen ve cümle yapıları.'],['practice','04','Alıştırma merkezi','Karışık sorularla bilgini kontrol et.'],['reading','05','Okuma','Kitaptaki Murat, Eylül ve Melanie metinleri.'],['exam','06','Yazılı provası','20 soruluk kapsamlı ünite provası.']];
     return '<section class="g-hero"><small>11. SINIF · ALMANCA · 1. THEMA</small><h1>Unterkunft</h1><p>Ev türleri, odalar, mobilyalar, sıfatlar, möchten, Dativ ve yer-yön edatları. Kelimeleri artikelleriyle ve doğru yazımlarıyla öğren.</p><button data-a="go" data-p="vocab">Kelime çalışmaya başla →</button></section>' +
       '<div class="g-stats"><div><small>TOPLAM KELİME</small><b>' + n + '</b></div><div><small>ÖĞRENİLEN</small><b>' + S.known.length + '/' + n + '</b><span>%' + pct + '</span></div><div><small>YAZIM DOĞRULUĞU</small><b>' + (sp.attempts ? Math.round(sp.correct / sp.attempts * 100) : 0) + '%</b><span>' + sp.correct + ' doğru · ' + sp.wrong + ' yanlış</span></div><div><small>EN İYİ DENEME</small><b>' + (S.best == null ? '—' : '%' + S.best) + '</b></div></div>' +
       '<div class="g-grid">' + cards.map(x => '<button data-a="go" data-p="' + x[0] + '"><small>' + x[1] + '</small><b>' + x[2] + '</b><span>' + x[3] + '</span><strong>Aç →</strong></button>').join('') + '</div>' +
@@ -133,16 +133,44 @@
         '<button type="button" data-a="known" data-id="' + w.id + '">' + (S.known.includes(w.id) ? '✓ Bildim' : 'Öğrendim') + '</button></div>'
       ).join('') + '</div>';
   }
+  function spellingTerm(term) {
+    return String(term || '').replace(/^(der|die|das)\\s+/i, '');
+  }
+  function normalizeGermanAnswer(value) {
+    return String(value == null ? '' : value)
+      .normalize('NFC')
+      .trim()
+      .toLocaleLowerCase('de')
+      .replace(/^(der|die|das)\\s+/, '')
+      .replace(/[äöüß]/g, ch => ({ ä: 'ae', ö: 'oe', ü: 'ue', ß: 'ss' })[ch])
+      .replace(/\\s+/g, ' ');
+  }
+  function spellingAnswerMatches(answer, term) {
+    return normalizeGermanAnswer(answer) === normalizeGermanAnswer(term);
+  }
   function nextSpell() {
-    const pool = S.mistakes.length ? D.vocabulary.filter(w => S.mistakes.includes(w.id)) : D.vocabulary;
-    U.spell = rand(pool.length ? pool : D.vocabulary); U.spellAnswer = ''; U.spellChecked = false;
+    const groupWords = U.spellGroup === 'all'
+      ? D.vocabulary
+      : D.vocabulary.filter(w => w.group === U.spellGroup);
+    const missedWords = groupWords.filter(w => S.mistakes.includes(w.id));
+    const pool = missedWords.length ? missedWords : groupWords;
+    U.spell = rand(pool.length ? pool : D.vocabulary);
+    U.spellAnswer = '';
+    U.spellChecked = false;
   }
   function spelling() {
     if (!U.spell) nextSpell();
-    const w = U.spell, ok = U.spellAnswer.normalize('NFC').trim() === w.term.normalize('NFC');
-    return title('YAZIM VE HAFIZA','Almanca Yazım Çalışması','Türkçe anlamını görüp Almancasını artikel dâhil eksiksiz yaz. Büyük harf ve umlautlar birebir kontrol edilir.') +
-      '<section class="g-spell"><small>' + esc((D.groups.find(g => g.id === w.group) || {}).label || 'KELİME') + '</small><h2>' + esc(w.meaning) + '</h2><p>İsimse artikel + isim yaz. Örnek: <b>die Wohnung</b>.</p><form id="g-spell-form"><input id="g-spell-input" value="' + esc(U.spellAnswer) + '" placeholder="Almanca karşılığını yaz..." autocomplete="off" spellcheck="false" ' + (U.spellChecked ? 'disabled' : '') + '><button ' + (U.spellChecked ? 'disabled' : '') + '>Kontrol et</button></form>' +
-      (U.spellChecked ? '<div class="g-feedback ' + (ok ? 'ok' : 'bad') + '"><b>' + (ok ? '✓ Tam doğru' : '✕ Yazım hatalı') + '</b><p>Doğru yazım: <strong>' + esc(w.term) + '</strong></p>' + (w.note ? '<small>' + esc(w.note) + '</small>' : '') + '</div><button data-a="spell-next">Sonraki kelime →</button>' : '') +
+    const w = U.spell;
+    const ok = spellingAnswerMatches(U.spellAnswer, w.term);
+    const selectedGroup = D.groups.find(g => g.id === U.spellGroup);
+    const groups = '<div class="g-filters g-spell-filters">' +
+      '<button type="button" data-a="spell-group" data-v="all" class="' + (U.spellGroup === 'all' ? 'active' : '') + '">Tüm konular (' + D.vocabulary.length + ')</button>' +
+      D.groups.map(g => '<button type="button" data-a="spell-group" data-v="' + g.id + '" class="' + (U.spellGroup === g.id ? 'active' : '') + '">' + esc(g.label) + ' (' + D.vocabulary.filter(word => word.group === g.id).length + ')</button>').join('') +
+      '</div>';
+    return title('YAZIM VE HAFIZA','Almanca Yazım Çalışması','Kelimeleri tek tek veya konu gruplarına ayırarak test et. Her kelimenin Türkçe anlamını görüp Almancasını yaz.') +
+      groups +
+      '<section class="g-spell"><small>' + esc(selectedGroup ? selectedGroup.label : 'TÜM KONULAR') + '</small><h2>' + esc(w.meaning) + '</h2><p>Artikel yazman gerekmiyor. Almanca klavye kullanmadan da yazabilirsin: <b>ä = ae, ö = oe, ü = ue, ß = ss</b>. Büyük/küçük harf farkı aranmaz.</p><form id="g-spell-form"><input id="g-spell-input" value="' + esc(U.spellAnswer) + '" placeholder="Almanca kelimeyi yaz..." autocomplete="off" spellcheck="false" ' + (U.spellChecked ? 'disabled' : '') + '><button ' + (U.spellChecked ? 'disabled' : '') + '>Kontrol et</button></form>' +
+      (U.spellChecked ? '<div class="g-feedback ' + (ok ? 'ok' : 'bad') + '"><b>' + (ok ? '✓ Doğru' : '✕ Tekrar dene') + '</b><p>Doğru kelime: <strong>' + esc(spellingTerm(w.term)) + '</strong></p>' + (w.note ? '<small>' + esc(w.note) + '</small>' : '') + '</div><button data-a="spell-next">Sonraki kelime →</button>' : '') +
       '<p class="g-source">Deneme: ' + S.spelling.attempts + ' · Doğru: ' + S.spelling.correct + ' · Yanlış: ' + S.spelling.wrong + ' · Tekrar edilecek kelime: ' + S.mistakes.length + '</p></section>';
   }
   function grammar() {
@@ -161,15 +189,15 @@
     if (kind === 'moechten') { const q = rand([['ich','möchte'],['du','möchtest'],['er / sie / es','möchte'],['wir','möchten'],['ihr','möchtet'],['sie / Sie','möchten']]); return {type:'input',q:'möchten fiilini “' + q[0] + '” öznesine göre çekimle.',a:q[1],why:q[0] + ' → ' + q[1]}; }
     if (kind === 'sentence') { const q = rand([['Ali bir villada yaşamak istiyor.',['Ali möchte in einer Villa leben.','Ali möchte in einem Villa leben.','Ali möchten in einer Villa leben.'],'Ali möchte in einer Villa leben.','die Villa → einer'],['Bir yüksek apartmanda oturuyorum.',['Ich wohne in einem Hochhaus.','Ich wohne in einer Hochhaus.','Ich wohnen in einem Hochhaus.'],'Ich wohne in einem Hochhaus.','das Hochhaus → einem']]); return {type:'choice',q:q[0],opts:q[1],a:q[2],why:q[3]}; }
     if (kind === 'reading') { const r=rand(D.readings), q=rand(r.questions); return {type:'choice',q:'“' + r.text + '”\\nİfade doğru mu? ' + q[0],opts:['Richtig','Falsch'],a:q[1]?'Richtig':'Falsch',why:q[1]?'Metinde verilen bilgiyle örtüşüyor.':'Metindeki bilgi ifadeyi doğrulamıyor.'}; }
-    const w=rand(D.vocabulary); return {type:'input',q:'“' + w.meaning + '” kelimesini Almanca yaz. İsimse artikelini ekle.',a:w.term,why:'Doğru yazım: ' + w.term};
+    const w=rand(D.vocabulary); return {type:'input',kind:'spelling',q:'“' + w.meaning + '” kelimesini Almanca yaz. Artikel gerekli değil.',a:w.term,why:'Doğru kelime: ' + spellingTerm(w.term)};
   }
   function session(n) { return {items:Array.from({length:n},makeQ),i:0,ans:'',checked:false,score:0,done:false}; }
   function quiz(s,isExam) {
     if (s.done) return '<section class="g-result"><b>' + s.score + '/' + s.items.length + '</b><h2>%' + Math.round(s.score/s.items.length*100) + ' başarı</h2><p>' + (isExam?'Yazılı provası':'Alıştırma') + ' tamamlandı.</p><button data-a="restart">Yeniden çöz</button></section>';
-    const q=s.items[s.i], ok=s.ans===q.a;
+    const q=s.items[s.i], ok=quizAnswerCorrect(q,s.ans);
     return '<div class="g-qmeta">' + (isExam?'YAZILI PROVASI':'ALIŞTIRMA') + ' · ' + (s.i+1) + '/' + s.items.length + ' · ' + s.score + ' doğru</div><section class="g-question"><h2>' + esc(q.q).replace(/\\n/g,'<br>') + '</h2>' +
       (q.type==='choice' ? q.opts.map(o=>'<button class="g-option ' + (s.ans===o?'selected ':'') + (s.checked&&o===q.a?'right':'') + '" data-a="option" data-v="' + esc(o) + '" ' + (s.checked?'disabled':'') + '>' + esc(o) + '</button>').join('') : '<input id="g-q-answer" value="' + esc(s.ans) + '" placeholder="Almanca cevabını yaz..." spellcheck="false" ' + (s.checked?'disabled':'') + '>') +
-      (s.checked?'<p class="g-feedback ' + (ok?'ok':'bad') + '"><b>' + (ok?'✓ Doğru':'✕ Doğru cevap: '+esc(q.a)) + '</b><br>' + esc(q.why) + '</p>':'') +
+      (q.kind==='spelling'&&!s.checked?'<p class="g-spell-tip">Artikel yazmana gerek yok · ä = ae · ö = oe · ü = ue · ß = ss</p>':'') + (s.checked?'<p class="g-feedback ' + (ok?'ok':'bad') + '"><b>' + (ok?'✓ Doğru':'✕ Doğru cevap: '+esc(q.kind==='spelling'?spellingTerm(q.a):q.a)) + '</b><br>' + esc(q.why) + '</p>':'') +
       '<button data-a="' + (s.checked?'q-next':'q-check') + '" ' + (!s.checked&&!s.ans?'disabled':'') + '>' + (s.checked?(s.i===s.items.length-1?'Sonuçları gör':'Sonraki soru →'):'Kontrol et') + '</button></section>';
   }
   function practice() { if (!U.quiz || U.exam) { U.quiz=session(10); U.exam=false; } return title('KARMA TEKRAR','Alıştırma Merkezi','Artikel, Dativ, yer edatları, möchten, cümle kurma ve kelime yazımı.') + quiz(U.quiz,false); }
@@ -276,14 +304,17 @@
     }
   }
   function checkSpell() {
-    U.spellAnswer=$('#g-spell-input')?.value || U.spellAnswer;
+    U.spellAnswer=$('#g-spell-input')?.value ?? U.spellAnswer;
     if (!U.spellAnswer.trim()) return toast('Önce cevap yaz.');
-    const ok=U.spellAnswer.normalize('NFC').trim()===U.spell.term.normalize('NFC');
+    const ok=spellingAnswerMatches(U.spellAnswer,U.spell.term);
     S.spelling.attempts++; if(ok){S.spelling.correct++;S.mistakes=S.mistakes.filter(x=>x!==U.spell.id);}else{S.spelling.wrong++;if(!S.mistakes.includes(U.spell.id))S.mistakes.push(U.spell.id);}
     U.spellChecked=true;save();render();
   }
+  function quizAnswerCorrect(q, answer) {
+    return q.kind === 'spelling' ? spellingAnswerMatches(answer, q.a) : answer === q.a;
+  }
   function activeQuiz(){return U.quiz;}
-  function checkQuiz(){const s=activeQuiz();if(!s||s.checked||!s.ans)return;const q=s.items[s.i];s.checked=true;if(s.ans===q.a)s.score++;render();}
+  function checkQuiz(){const s=activeQuiz();if(!s||s.checked||!s.ans)return;const q=s.items[s.i];s.checked=true;if(quizAnswerCorrect(q,s.ans))s.score++;render();}
   function click(e) {
     const b = e.target.closest('[data-a]');
     if (!b) return;
@@ -343,6 +374,10 @@
       if (w) speak(w.term);
     } else if (a === 'speak-text') {
       speak(b.dataset.text || '');
+    } else if (a === 'spell-group') {
+      U.spellGroup = b.dataset.v || 'all';
+      nextSpell();
+      render();
     } else if (a === 'spell-next') {
       nextSpell();
       render();
