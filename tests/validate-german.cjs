@@ -43,7 +43,14 @@ for (const feature of [
   'data-a="shuffle"',
   'data-a="toggle-meanings"',
   'Almanca → Türkçe → Almanca',
-  "StudyVoice.say(content, lang"
+  "StudyVoice.say(content, lang",
+  'data-a="spell-group"',
+  'function normalizeGermanAnswer(value)',
+  'function spellingAnswerMatches(answer, term)',
+  '.replace(/[äöüß]/g',
+  'U.spellGroup === \'all\'',
+  'Artikel yazman gerekmiyor',
+  'function quizAnswerCorrect(q, answer)'
 ]) {
   assert.ok(germanApp.includes(feature), 'Missing German vocabulary feature: ' + feature);
 }
